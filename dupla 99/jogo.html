@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dupla 99 - Labirinto Financeiro</title>
+
+<style>
+
+/* =========================
+   CONFIGURAÇÕES GERAIS
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:
+        radial-gradient(circle at top, #244b70, transparent 45%),
+        linear-gradient(135deg, #07111f, #102d48);
+
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    color: white;
+}
+
+.game {
+    width: 1000px;
+    max-width: 100%;
+
+    background: #eef3f7;
+
+    color: #172033;
+
+    border-radius: 25px;
+
+    overflow: hidden;
+
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+header {
+    background: linear-gradient(135deg, #0a3558, #1678ad);
+
+    color: white;
+
+    text-align: center;
+
+    padding: 22px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header p {
+    margin: 6px 0 0;
+}
+
+
+/* =========================
+   TELAS
+========================= */
+
+.screen {
+    padding: 30px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================
+   TELA INICIAL
+========================= */
+
+.start {
+    text-align: center;
+}
+
+.logo {
+    font-size: 70px;
+    margin-bottom: 10px;
+}
+
+.start h2 {
+    font-size: 30px;
+}
+
+.start p {
+    font-size: 17px;
+    line-height: 1.5;
+    color: #475569;
+}
+
+.badge {
+    display: inline-block;
+
+    background: #dff3ff;
+
+    color: #126d9f;
+
+    padding: 8px 15px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+}
+
+.start-info {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 20px;
+
+    margin: 25px 0;
+}
+
+.info-card {
+    background: white;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    width: 180px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+
+.info-card .icon {
+    font-size: 35px;
+}
+
+button {
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 14px 22px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+.primary {
+    background: #1478ad;
+    color: white;
+
+    box-shadow: 0 5px 15px rgba(20,120,173,.35);
+}
+
+
+/* =========================
+   PAINEL DO JOGO
+========================= */
+
+.game-info {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr 1fr 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+.info {
+    background: white;
+
+    padding: 12px;
+
+    text-align: center;
+
+    border-radius: 12px;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+}
+
+.info strong {
+    display: block;
+
+    font-size: 20px;
+
+    color: #126c9e;
+}
+
+
+/* =========================
+   BARRA DE PROGRESSO
+========================= */
+
+.progress {
+    height: 10px;
+
+    background: #d4dce3;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    margin-bottom: 20px;
+}
+
+.bar {
+    height: 100%;
+
+    width: 0%;
+
+    background: #20a968;
+
+    transition: .4s;
+}
+
+
+/* =========================
+   PERGUNTA
+========================= */
+
+.question-box {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    text-align: center;
+
+    margin-bottom: 20px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.question-number {
+    color: #1478ad;
+
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+.question {
+    font-size: 21px;
+
+    line-height: 1.45;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   SALA / LABIRINTO
+========================= */
+
+.room {
+    position: relative;
+
+    min-height: 380px;
+
+    border-radius: 22px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #a8c9dd 0%,
+            #d8e6ed 65%,
+            #9b7b59 65%,
+            #76583f 100%
+        );
+
+    border: 6px solid #26394a;
+
+    box-shadow:
+        inset 0 0 30px rgba(0,0,0,.3);
+}
+
+
+/* Parede */
+
+.room::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 70px;
+
+    border-top: 4px solid rgba(0,0,0,.12);
+}
+
+
+/* =========================
+   PORTAS
+========================= */
+
+.doors {
+    position: absolute;
+
+    top: 35px;
+
+    left: 0;
+    right: 0;
+
+    display: flex;
+
+    justify-content: space-around;
+
+    align-items: flex-start;
+
+    padding: 0 20px;
+}
+
+.door {
+    width: 150px;
+
+    height: 190px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #603d27,
+            #855936,
+            #603d27
+        );
+
+    border: 7px solid #382519;
+
+    border-bottom: none;
+
+    border-radius: 12px 12px 0 0;
+
+    color: white;
+
+    cursor: pointer;
+
+    position: relative;
+
+    box-shadow:
+        0 8px 12px rgba(0,0,0,.35);
+
+    transition: .25s;
+
+    padding: 10px;
+}
+
+.door:hover {
+    transform: translateY(-8px);
+
+    filter: brightness(1.2);
+}
+
+.door:disabled {
+    cursor: default;
+}
+
+.door-label {
+    background: #172033;
+
+    border-radius: 8px;
+
+    padding: 8px;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+.door-answer {
+    font-size: 15px;
+
+    line-height: 1.3;
+
+    margin-top: 15px;
+}
+
+.door-knob {
+    position: absolute;
+
+    right: 15px;
+
+    top: 105px;
+
+    width: 12px;
+
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: #e3b33e;
+}
+
+
+/* =========================
+   PERSONAGEM
+========================= */
+
+.player {
+    position: absolute;
+
+    bottom: 35px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    text-align: center;
+
+    z-index: 5;
+
+    transition: .7s;
+}
+
+.player-icon {
+    font-size: 65px;
+
+    filter: drop-shadow(
+        0 5px 4px rgba(0,0,0,.35)
+    );
+}
+
+.player-name {
+    background: #172033;
+
+    color: white;
+
+    padding: 5px 10px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   ANIMAÇÃO DO PERSONAGEM
+========================= */
+
+.player.walk-left {
+    left: 13%;
+}
+
+.player.walk-right {
+    left: 87%;
+}
+
+.player.walk-center {
+    left: 50%;
+}
+
+
+/* =========================
+   FEEDBACK
+========================= */
+
+.feedback {
+    padding: 17px;
+
+    border-radius: 14px;
+
+    margin-top: 15px;
+
+    line-height: 1.5;
+
+    text-align: center;
+
+    font-size: 16px;
+}
+
+.feedback.ok {
+    background: #daf7e4;
+
+    color: #176b37;
+}
+
+.feedback.no {
+    background: #ffe1e1;
+
+    color: #911d1d;
+}
+
+
+/* =========================
+   COMBO
+========================= */
+
+.combo {
+    min-height: 30px;
+
+    text-align: center;
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    color: #e47708;
+
+    margin: 8px;
+}
+
+
+/* =========================
+   PRÓXIMA FASE
+========================= */
+
+.next-area {
+    text-align: center;
+
+    margin-top: 18px;
+}
+
+.next-phase {
+    display: none;
+
+    background: #20a968;
+
+    color: white;
+
+    font-size: 21px;
+
+    padding: 17px 38px;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,.25);
+
+    animation: pulse 1.2s infinite;
+
+    border: 3px solid #ffffff55;
+}
+
+.next-phase:hover {
+    background: #17884f;
+
+    transform: scale(1.06);
+}
+
+@keyframes pulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+}
+
+
+/* =========================
+   RESULTADO
+========================= */
+
+.result {
+    text-align: center;
+}
+
+.trophy {
+    font-size: 80px;
+}
+
+.final-score {
+    font-size: 55px;
+
+    font-weight: bold;
+
+    color: #1478ad;
+
+    margin: 10px;
+}
+
+.rank {
+    font-size: 27px;
+
+    font-weight: bold;
+
+    margin: 15px;
+}
+
+.final-box {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    margin: 20px auto;
+
+    max-width: 550px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,.1);
+}
+
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media(max-width:750px) {
+
+    .doors {
+        padding: 0 5px;
+    }
+
+    .door {
+        width: 23%;
+        height: 170px;
+    }
+
+    .door-answer {
+        font-size: 12px;
+    }
+
+    .game-info {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .question {
+        font-size: 18px;
+    }
+
+    .start-info {
+        flex-direction: column;
+        align-items: center;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="game">
+
+
+<header>
+
+<h1>🏦 DUPLA 99 — LABIRINTO FINANCEIRO</h1>
+
+<p>Você consegue chegar ao cofre?</p>
+
+</header>
+
+
+
+<!-- =========================
+     TELA INICIAL
+========================= -->
+
+<section id="start" class="screen start">
+
+<div class="logo">
+🧍‍♂️🚪🚪🚪🚪
+</div>
+
+<div class="badge">
+GRUPO 2 • CÁLCULOS FINANCEIROS
+</div>
+
+<h2>
+🔐 O Labirinto Financeiro
+</h2>
+
+<p>
+
+A empresa Dupla 99 precisa de um novo
+especialista financeiro.
+
+Seu personagem está preso no labirinto.
+
+Para avançar, você precisa escolher
+a porta que contém a resposta correta.
+
+</p>
+
+<div class="start-info">
+
+<div class="info-card">
+
+<div class="icon">🚪</div>
+
+<strong>12</strong>
+
+<p>Desafios</p>
+
+</div>
+
+<div class="info-card">
+
+<div class="icon">❤️</div>
+
+<strong>3</strong>
+
+<p>Vidas</p>
+
+</div>
+
+<div class="info-card">
+
+<div class="icon">💰</div>
+
+<strong>100</strong>
+
+<p>Pontos por acerto</p>
+
+</div>
+
+</div>
+
+<p>
+⚠️ Cuidado! Escolher a porta errada faz você perder uma vida.
+</p>
+
+<button
+class="primary"
+onclick="startGame()">
+
+🚀 ENTRAR NO LABIRINTO
+
+</button>
+
+</section>
+
+
+
+<!-- =========================
+     JOGO
+========================= -->
+
+<section id="quiz" class="screen hidden">
+
+
+<div class="game-info">
+
+
+<div class="info">
+
+<small>PONTOS</small>
+
+<strong id="score">
+0
+</strong>
+
+</div>
+
+
+<div class="info">
+
+<small>FASE</small>
+
+<strong id="counter">
+1/12
+</strong>
+
+</div>
+
+
+<div class="info">
+
+<small>MOEDAS</small>
+
+<strong id="coins">
+0 🪙
+</strong>
+
+</div>
+
+
+<div class="info">
+
+<small>VIDAS</small>
+
+<strong id="lives">
+❤️❤️❤️
+</strong>
+
+</div>
+
+
+</div>
+
+
+
+<div class="progress">
+
+<div
+class="bar"
+id="bar">
+
+</div>
+
+</div>
+
+
+
+<div class="question-box">
+
+<div
+class="question-number"
+id="questionNumber">
+
+FASE 1
+
+</div>
+
+<div
+class="question"
+id="question">
+
+</div>
+
+</div>
+
+
+
+<div class="combo" id="combo"></div>
+
+
+
+<!-- =========================
+     SALA
+========================= -->
+
+<div class="room">
+
+
+<div class="doors" id="doors">
+
+</div>
+
+
+
+<div
+class="player"
+id="player">
+
+<div class="player-icon">
+🧍‍♂️
+</div>
+
+<div class="player-name">
+DUPLA 99
+</div>
+
+</div>
+
+
+</div>
+
+
+
+<div
+id="feedback"
+class="feedback hidden">
+
+</div>
+
+
+
+<!-- BOTÃO PRÓXIMA FASE -->
+
+<div class="next-area">
+
+<button
+id="next"
+class="next-phase"
+onclick="nextQuestion()">
+
+➡️ PRÓXIMA FASE
+
+</button>
+
+</div>
+
+
+</section>
+
+
+
+<!-- =========================
+     RESULTADO
+========================= -->
+
+<section id="result" class="screen result">
+
+<div class="trophy">
+🏆
+</div>
+
+<h2>
+Você chegou ao final!
+</h2>
+
+<div class="final-box">
+
+<p>
+Pontuação final
+</p>
+
+<div
+class="final-score"
+id="finalScore">
+
+0
+
+</div>
+
+<div
+class="rank"
+id="rank">
+
+</div>
+
+<p id="message"></p>
+
+<p>
+🪙 Moedas:
+<strong id="finalCoins">
+0
+</strong>
+</p>
+
+<p>
+❤️ Vidas restantes:
+<strong id="finalLives">
+0
+</strong>
+</p>
+
+</div>
+
+<button
+class="primary"
+onclick="restart()">
+
+🔄 JOGAR NOVAMENTE
+
+</button>
+
+</section>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   PERGUNTAS
+========================= */
+
+const questions = [
+
+
+{
+q: "Uma empresa aplicou R$ 2.000,00 a juros simples de 3% ao mês durante 4 meses. Qual será o valor dos juros?",
+
+a: [
+"R$ 180,00",
+"R$ 200,00",
+"R$ 240,00",
+"R$ 260,00"
+],
+
+c: 2,
+
+e: "Juros = 2.000 × 0,03 × 4 = R$ 240,00."
+
+},
+
+
+{
+q: "Um capital de R$ 1.500,00 foi aplicado durante 6 meses, a 2% ao mês, no regime de juros simples. Qual será o montante?",
+
+a: [
+"R$ 1.620,00",
+"R$ 1.680,00",
+"R$ 1.700,00",
+"R$ 1.720,00"
+],
+
+c: 1,
+
+e: "Juros = 1.500 × 0,02 × 6 = R$ 180,00. Montante = R$ 1.680,00."
+
+},
+
+
+{
+q: "Uma aplicação de R$ 1.000,00 rende 10% ao mês, em juros compostos, durante 2 meses. Qual será o montante?",
+
+a: [
+"R$ 1.100,00",
+"R$ 1.200,00",
+"R$ 1.210,00",
+"R$ 1.220,00"
+],
+
+c: 2,
+
+e: "Montante = 1.000 × (1,10)² = R$ 1.210,00."
+
+},
+
+
+{
+q: "Um capital de R$ 2.000,00 é aplicado a juros compostos de 5% ao mês durante 3 meses. Aproximadamente, qual será o montante?",
+
+a: [
+"R$ 2.100,00",
+"R$ 2.205,00",
+"R$ 2.315,25",
+"R$ 2.400,00"
+],
+
+c: 2,
+
+e: "Montante = 2.000 × (1,05)³ = R$ 2.315,25."
+
+},
+
+
+{
+q: "Qual é a principal diferença entre juros simples e juros compostos?",
+
+a: [
+"Nos juros simples não existe taxa de juros.",
+"Nos juros compostos os juros acumulados passam a gerar novos juros.",
+"Nos juros simples o valor sempre dobra.",
+"Nos juros compostos não existe capital inicial."
+],
+
+c: 1,
+
+e: "Nos juros compostos, os juros acumulados também passam a gerar novos juros."
+
+},
+
+
+{
+q: "Uma mercadoria custa R$ 800,00 e recebe um desconto de 15% para pagamento à vista. Qual será o preço final?",
+
+a: [
+"R$ 660,00",
+"R$ 680,00",
+"R$ 700,00",
+"R$ 720,00"
+],
+
+c: 1,
+
+e: "15% de R$ 800 = R$ 120. Portanto, R$ 800 − R$ 120 = R$ 680,00."
+
+},
+
+
+{
+q: "No sistema de amortização SAC, as parcelas normalmente:",
+
+a: [
+"Permanecem exatamente iguais durante todo o financiamento.",
+"Começam maiores e diminuem ao longo do tempo.",
+"Começam menores e aumentam ao longo do tempo.",
+"Não possuem juros."
+],
+
+c: 1,
+
+e: "No SAC, a amortização é constante e os juros diminuem conforme o saldo devedor diminui."
+
+},
+
+
+{
+q: "Por que as parcelas do sistema SAC tendem a diminuir?",
+
+a: [
+"Porque a taxa de juros aumenta.",
+"Porque a amortização aumenta todos os meses.",
+"Porque os juros são calculados sobre um saldo devedor que diminui.",
+"Porque o financiamento não possui juros."
+],
+
+c: 2,
+
+e: "Com a redução do saldo devedor, os juros também diminuem."
+
+},
+
+
+{
+q: "No sistema PRICE, considerando uma taxa fixa e condições normais do financiamento, as parcelas são:",
+
+a: [
+"Iguais ao longo do período.",
+"Sempre crescentes.",
+"Sempre decrescentes.",
+"Sem juros."
+],
+
+c: 0,
+
+e: "No sistema PRICE, as prestações são normalmente constantes."
+
+},
+
+
+{
+q: "Uma das características do sistema PRICE é:",
+
+a: [
+"A amortização é sempre igual em todas as parcelas.",
+"As parcelas são calculadas para permanecerem iguais durante o financiamento.",
+"Não há cobrança de juros.",
+"O saldo devedor não diminui."
+],
+
+c: 1,
+
+e: "No PRICE, a prestação permanece normalmente constante, enquanto a composição entre juros e amortização muda."
+
+},
+
+
+{
+q: "No sistema SAA (Sistema de Amortização Americano), uma característica comum é:",
+
+a: [
+"A amortização do principal ocorre de forma concentrada no final do prazo.",
+"A amortização é sempre igual à do SAC.",
+"Todas as parcelas são obrigatoriamente decrescentes.",
+"Não existem juros durante o financiamento."
+],
+
+c: 0,
+
+e: "No SAA, é comum pagar os juros durante o período e deixar a quitação do principal concentrada no final."
+
+},
+
+
+{
+q: "Uma empresa aplicou R$ 5.000,00 durante 2 meses. A opção A oferece juros simples de 10% ao mês. A opção B oferece juros compostos de 10% ao mês. Qual apresenta maior montante?",
+
+a: [
+"A opção A, porque juros simples sempre rendem mais.",
+"A opção B, porque os juros compostos também rendem sobre os juros acumulados.",
+"As duas apresentam exatamente o mesmo valor.",
+"Nenhuma das opções gera juros."
+],
+
+c: 1,
+
+e: "Juros simples: R$ 6.000,00. Juros compostos: R$ 6.050,00. Portanto, os compostos geram o maior montante."
+
+}
+
+];
+
+
+
+/* =========================
+   VARIÁVEIS
+========================= */
+
+let current = 0;
+
+let points = 0;
+
+let coins = 0;
+
+let lives = 3;
+
+let combo = 0;
+
+let answered = false;
+
+
+
+/* =========================
+   COMEÇAR
+========================= */
+
+function startGame() {
+
+current = 0;
+
+points = 0;
+
+coins = 0;
+
+lives = 3;
+
+combo = 0;
+
+document.getElementById("start")
+.classList.add("hidden");
+
+document.getElementById("result")
+.classList.add("hidden");
+
+document.getElementById("quiz")
+.classList.remove("hidden");
+
+showQuestion();
+
+}
+
+
+
+/* =========================
+   MOSTRAR QUESTÃO
+========================= */
+
+function showQuestion() {
+
+answered = false;
+
+const q = questions[current];
+
+
+document.getElementById("counter")
+.textContent = `${current + 1}/12`;
+
+
+document.getElementById("score")
+.textContent = points;
+
+
+document.getElementById("coins")
+.textContent = `${coins} 🪙`;
+
+
+document.getElementById("questionNumber")
+.textContent = `FASE ${current + 1}`;
+
+
+document.getElementById("question")
+.textContent = q.q;
+
+
+document.getElementById("bar")
+.style.width =
+`${(current / questions.length) * 100}%`;
+
+
+updateLives();
+
+
+if(combo >= 2) {
+
+document.getElementById("combo")
+.textContent =
+`🔥 COMBO x${combo}!`;
+
+}
+
+else {
+
+document.getElementById("combo")
+.textContent = "";
+
+}
+
+
+const doors =
+document.getElementById("doors");
+
+doors.innerHTML = "";
+
+
+q.a.forEach((answer,index) => {
+
+const door =
+document.createElement("button");
+
+door.className = "door";
+
+
+door.innerHTML = `
+
+<div class="door-label">
+
+${String.fromCharCode(65 + index)}
+
+</div>
+
+<div class="door-answer">
+
+${answer}
+
+</div>
+
+<div class="door-knob"></div>
+
+`;
+
+
+door.onclick = function() {
+
+choose(index);
+
+};
+
+
+doors.appendChild(door);
+
+});
+
+
+document.getElementById("player")
+.className = "player";
+
+
+document.getElementById("feedback")
+.className =
+"feedback hidden";
+
+
+document.getElementById("next")
+.style.display = "none";
+
+}
+
+
+
+/* =========================
+   ESCOLHER PORTA
+========================= */
+
+function choose(index) {
+
+if(answered) return;
+
+answered = true;
+
+
+const q = questions[current];
+
+const doors =
+document.querySelectorAll(".door");
+
+
+doors.forEach(d => {
+
+d.disabled = true;
+
+});
+
+
+/* Movimento do personagem */
+
+const player =
+document.getElementById("player");
+
+
+if(index < 2) {
+
+player.classList.add("walk-left");
+
+}
+
+else {
+
+player.classList.add("walk-right");
+
+}
+
+
+setTimeout(function() {
+
+const feedback =
+document.getElementById("feedback");
+
+
+if(index === q.c) {
+
+
+/* ACERTO */
+
+combo++;
+
+
+let bonus = 0;
+
+
+if(combo >= 2) {
+
+bonus = 50;
+
+}
+
+
+const earned =
+100 + bonus;
+
+
+points += earned;
+
+coins += 10;
+
+
+doors[index].style.background =
+"#238b55";
+
+
+feedback.className =
+"feedback ok";
+
+
+feedback.innerHTML =
+
+`<strong>🎉 PORTA CORRETA!</strong><br>
+Você conseguiu passar!<br>
+<strong>+${earned} pontos</strong> 🏆<br>
++10 moedas 🪙<br><br>
+${q.e}`;
+
+
+if(combo >= 2) {
+
+feedback.innerHTML +=
+`<br><br>🔥 COMBO x${combo}! +50 pontos de bônus!`;
+
+}
+
+
+}
+
+else {
+
+
+/* ERRO */
+
+lives--;
+
+combo = 0;
+
+
+doors[index].style.background =
+"#a83232";
+
+
+doors[q.c].style.background =
+"#238b55";
+
+
+feedback.className =
+"feedback no";
+
+
+feedback.innerHTML =
+
+`<strong>💥 PORTA ERRADA!</strong><br>
+Você perdeu uma vida! ❤️<br><br>
+A resposta correta era:<br>
+<strong>
+${String.fromCharCode(65 + q.c)})
+${q.a[q.c]}
+</strong><br><br>
+${q.e}`;
+
+}
+
+
+updateLives();
+
+
+document.getElementById("score")
+.textContent = points;
+
+
+document.getElementById("coins")
+.textContent = `${coins} 🪙`;
+
+
+/* =========================
+   MOSTRAR PRÓXIMA FASE
+========================= */
+
+if(lives <= 0) {
+
+feedback.innerHTML +=
+`<br><br><strong>💀 Você ficou sem vidas!</strong>`;
+
+document.getElementById("next")
+.textContent =
+"💀 VER RESULTADO";
+
+}
+
+else if(current === questions.length - 1) {
+
+document.getElementById("next")
+.textContent =
+"🏆 FINALIZAR JOGO";
+
+}
+
+else {
+
+document.getElementById("next")
+.textContent =
+"➡️ PRÓXIMA FASE";
+
+}
+
+
+document.getElementById("next")
+.style.display =
+"inline-block";
+
+
+},500);
+
+}
+
+
+
+/* =========================
+   VIDAS
+========================= */
+
+function updateLives() {
+
+let text = "";
+
+for(let i = 0; i < 3; i++) {
+
+if(i < lives) {
+
+text += "❤️";
+
+}
+
+else {
+
+text += "🖤";
+
+}
+
+}
+
+document.getElementById("lives")
+.textContent = text;
+
+}
+
+
+
+/* =========================
+   PRÓXIMA FASE
+========================= */
+
+function nextQuestion() {
+
+if(lives <= 0) {
+
+finish();
+
+return;
+
+}
+
+
+current++;
+
+
+if(current >= questions.length) {
+
+finish();
+
+}
+
+else {
+
+showQuestion();
+
+}
+
+}
+
+
+
+/* =========================
+   RESULTADO
+========================= */
+
+function finish() {
+
+document.getElementById("quiz")
+.classList.add("hidden");
+
+document.getElementById("result")
+.classList.remove("hidden");
+
+
+document.getElementById("finalScore")
+.textContent =
+`${points} pontos`;
+
+
+document.getElementById("finalCoins")
+.textContent =
+coins;
+
+
+document.getElementById("finalLives")
+.textContent =
+lives;
+
+
+let rank;
+
+let message;
+
+
+if(lives <= 0) {
+
+rank =
+"💀 DESAFIO NÃO CONCLUÍDO";
+
+message =
+"A Dupla 99 ficou sem vidas. Estude os cálculos e tente novamente!";
+
+}
+
+else if(points >= 1200) {
+
+rank =
+"🏆 LENDA FINANCEIRA";
+
+message =
+"Você dominou o Labirinto Financeiro!";
+
+}
+
+else if(points >= 900) {
+
+rank =
+"🥇 ESPECIALISTA FINANCEIRO";
+
+message =
+"Excelente! Você demonstrou grande conhecimento financeiro.";
+
+}
+
+else if(points >= 600) {
+
+rank =
+"🥈 ANALISTA FINANCEIRO";
+
+message =
+"Muito bom! Você está no caminho certo.";
+
+}
+
+else {
+
+rank =
+"📚 APRENDIZ FINANCEIRO";
+
+message =
+"Continue estudando e tente novamente.";
+
+}
+
+
+document.getElementById("rank")
+.textContent = rank;
+
+
+document.getElementById("message")
+.textContent = message;
+
+}
+
+
+
+/* =========================
+   REINICIAR
+========================= */
+
+function restart() {
+
+document.getElementById("result")
+.classList.add("hidden");
+
+document.getElementById("quiz")
+.classList.remove("hidden");
+
+startGame();
+
+}
+
+</script>
+
+</body>
+</html>
